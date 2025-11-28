@@ -1,0 +1,13 @@
+services:
+  database:
+    image: postgres:15
+    container_name: orders-database
+    env_file:
+      - .env
+    ports:
+        - "5432:5432"
+    volumes:
+      - orders_potgres_data:/var/lib/postgresql/data
+
+volumes:
+  orders_potgres_data: {}
