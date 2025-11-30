@@ -20,7 +20,7 @@ public class ProductEntity {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false)
