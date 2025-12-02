@@ -17,8 +17,11 @@ public class ProductResponseDTO {
 
     private UUID id;
     private String name;
+    private String description;
     private BigDecimal price;
     private Integer stockQuantity;
+    private BigDecimal weight;
+    private BigDecimal averageRating;
     private Boolean active;
     private CategoryResponseDTO category;
 

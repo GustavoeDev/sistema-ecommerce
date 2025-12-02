@@ -1,5 +1,7 @@
 package br.com.gustavoedev.orders_service.modules.orders.dtos.order;
 
+import br.com.gustavoedev.orders_service.modules.orders.dtos.address.AddressResponseDTO;
+import br.com.gustavoedev.orders_service.modules.orders.dtos.coupon.CouponResponseDTO;
 import br.com.gustavoedev.orders_service.modules.orders.dtos.user.UserResponseDTO;
 import br.com.gustavoedev.orders_service.modules.orders.enums.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -22,7 +24,11 @@ public class OrderResponseDTO {
     private LocalDateTime createdAt;
     private OrderStatus status;
     private UserResponseDTO client;
+    private AddressResponseDTO address;
+    private CouponResponseDTO coupon;
     private List<OrderItemResponseDTO> items;
-    private BigDecimal totalValue;
+    private BigDecimal totalAmount;
+    private BigDecimal shippingCost;
+    private BigDecimal discountAmount;
 
 }

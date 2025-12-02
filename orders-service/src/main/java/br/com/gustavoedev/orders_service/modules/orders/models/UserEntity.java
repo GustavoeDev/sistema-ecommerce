@@ -32,6 +32,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
+    @Builder.Default
     private Boolean active = true;
 
     @CreationTimestamp
@@ -41,4 +42,12 @@ public class UserEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<OrderEntity> orders;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<AddressEntity> addresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ReviewEntity> reviews;
 }

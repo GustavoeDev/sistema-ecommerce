@@ -35,12 +35,14 @@ public class ProductService {
         }
 
         CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new CategoryNotFoundException("Cateogoria com id " + dto.getCategoryId() + " não encontrada."));
+                .orElseThrow(() -> new CategoryNotFoundException("Categoria com id " + dto.getCategoryId() + " não encontrada."));
 
         ProductEntity entity = new ProductEntity();
         entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
         entity.setPrice(dto.getPrice());
         entity.setStockQuantity(dto.getStockQuantity());
+        entity.setWeight(dto.getWeight());
         entity.setActive(true);
         entity.setCategory(category);
 
@@ -69,7 +71,7 @@ public class ProductService {
 
     public List<ProductResponseDTO> getProductsByCategory(UUID categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundException("Cateogoria com id " + categoryId + " não encontrada.");
+            throw new CategoryNotFoundException("Categoria com id " + categoryId + " não encontrada.");
         }
 
         return productRepository.findByCategoryId(categoryId).stream()
@@ -85,6 +87,10 @@ public class ProductService {
             entity.setName(dto.getName());
         }
 
+        if (dto.getDescription() != null) {
+            entity.setDescription(dto.getDescription());
+        }
+
         if (dto.getPrice() != null) {
             entity.setPrice(dto.getPrice());
         }
@@ -93,13 +99,17 @@ public class ProductService {
             entity.setStockQuantity(dto.getStockQuantity());
         }
 
+        if (dto.getWeight() != null) {
+            entity.setWeight(dto.getWeight());
+        }
+
         if (dto.getActive() != null) {
             entity.setActive(dto.getActive());
         }
 
         if (dto.getCategoryId() != null) {
             CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new CategoryNotFoundException("Cateogoria com id " + dto.getCategoryId() + " não encontrada."));
+                    .orElseThrow(() -> new CategoryNotFoundException("Categoria com id " + dto.getCategoryId() + " não encontrada."));
             entity.setCategory(category);
         }
 

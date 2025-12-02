@@ -7,7 +7,6 @@ import br.com.gustavoedev.orders_service.modules.orders.models.OrderItemEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,23 +16,25 @@ public class OrderMapper {
 
     private final UserMapper userMapper;
     private final ProductMapper productMapper;
+    private final AddressMapper addressMapper;
+    private final CouponMapper couponMapper;
 
     public OrderResponseDTO toResponseDTO(OrderEntity entity) {
         List<OrderItemResponseDTO> items = entity.getItems().stream()
                 .map(this::toOrderItemResponseDTO)
                 .collect(Collectors.toList());
 
-        BigDecimal totalValue = items.stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         return OrderResponseDTO.builder()
                 .id(entity.getId())
                 .createdAt(entity.getCreatedAt())
                 .status(entity.getStatus())
                 .client(userMapper.toResponseDTO(entity.getClient()))
+                .address(addressMapper.toResponseDTO(entity.getAddress()))
+                .coupon(entity.getCoupon() != null ? couponMapper.toResponseDTO(entity.getCoupon()) : null)
                 .items(items)
-                .totalValue(totalValue)
+                .totalAmount(entity.getTotalAmount())
+                .shippingCost(entity.getShippingCost())
+                .discountAmount(entity.getDiscountAmount())
                 .build();
     }
 

@@ -13,20 +13,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CategoryAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleCategoryAlreadyExists(CategoryAlreadyExistsException ex) {
-        ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.CONFLICT.value())
-                .error("Conflict")
-                .message(ex.getMessage())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-    }
-
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+    @ExceptionHandler({
+        CategoryAlreadyExistsException.class,
+        UserAlreadyExistsException.class,
+        ProductAlreadyExistsException.class,
+        CouponAlreadyExistsException.class
+    })
+    public ResponseEntity<ErrorResponse> handleAlreadyExists(RuntimeException ex) {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
@@ -41,7 +34,10 @@ public class GlobalExceptionHandler {
         CategoryNotFoundException.class,
         ProductNotFoundException.class,
         UserNotFoundException.class,
-        OrderNotFoundException.class
+        OrderNotFoundException.class,
+        AddressNotFoundException.class,
+        CouponNotFoundException.class,
+        ReviewNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException ex) {
         ErrorResponse error = ErrorResponse.builder()
@@ -54,7 +50,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler({InsufficientStockException.class, ProductInactiveException.class})
+    @ExceptionHandler({
+        InsufficientStockException.class,
+        ProductInactiveException.class,
+        InvalidCouponException.class
+    })
     public ResponseEntity<ErrorResponse> handleBusinessLogicErrors(RuntimeException ex) {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -85,16 +85,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(ProductAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleProductAlreadyExists(ProductAlreadyExistsException ex) {
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex) {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.CONFLICT.value())
-                .error("Conflict")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
                 .message(ex.getMessage())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)

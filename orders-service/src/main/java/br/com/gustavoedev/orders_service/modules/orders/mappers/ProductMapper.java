@@ -15,11 +15,13 @@ public class ProductMapper {
         return ProductResponseDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
+                .description(entity.getDescription())
                 .price(entity.getPrice())
                 .stockQuantity(entity.getStockQuantity())
+                .weight(entity.getWeight())
+                .averageRating(entity.getAverageRating())
                 .active(entity.getActive())
                 .category(categoryMapper.toResponseDTO(entity.getCategory()))
                 .build();
     }
-
 }

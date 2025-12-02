@@ -18,14 +18,18 @@ public class ProductUpdateDTO {
 
     private String name;
 
+    private String description;
+
     @DecimalMin(value = "0.01", message = "Preço deve ser maior que zero!")
     private BigDecimal price;
 
     @Min(value = 0, message = "Quantidade em estoque não pode ser negativa!")
     private Integer stockQuantity;
 
+    @DecimalMin(value = "0.001", message = "Peso deve ser maior que zero!")
+    private BigDecimal weight;
+
     private Boolean active;
 
     private UUID categoryId;
-
 }

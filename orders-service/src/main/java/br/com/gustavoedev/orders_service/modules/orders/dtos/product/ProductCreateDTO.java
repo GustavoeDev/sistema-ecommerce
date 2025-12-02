@@ -21,6 +21,8 @@ public class ProductCreateDTO {
     @NotBlank(message = "Nome é obrigatório!")
     private String name;
 
+    private String description;
+
     @NotNull(message = "Preço é obrigatório!")
     @DecimalMin(value = "0.01", message = "Preço deve ser maior que zero!")
     private BigDecimal price;
@@ -28,6 +30,9 @@ public class ProductCreateDTO {
     @NotNull(message = "A quantidade em estoque é necessária!")
     @Min(value = 0, message = "Stock quantity cannot be negative")
     private Integer stockQuantity;
+
+    @DecimalMin(value = "0.001", message = "Peso deve ser maior que zero!")
+    private BigDecimal weight;
 
     @NotNull(message = "Categoria é obrigatória!")
     private UUID categoryId;

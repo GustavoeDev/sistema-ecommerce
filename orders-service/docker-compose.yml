@@ -5,9 +5,31 @@ services:
     env_file:
       - .env
     ports:
-        - "5432:5432"
+      - "5432:5432"
     volumes:
-      - orders_potgres_data:/var/lib/postgresql/data
+      - orders_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  orders-service:
+    build: .
+    container_name: orders-service
+    depends_on:
+      - database
+    environment:
+      # Use os nomes padrão do Spring Boot
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/orders_db
+      SPRING_DATASOURCE_USERNAME: orders_user
+      SPRING_DATASOURCE_PASSWORD: OrdersP4ssw0rd
+      # Opcional: Para garantir que o Hibernate atualize o schema
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
 
 volumes:
-  orders_potgres_data: {}
+  orders_postgres_data: {}
+
+networks:
+  backend:
