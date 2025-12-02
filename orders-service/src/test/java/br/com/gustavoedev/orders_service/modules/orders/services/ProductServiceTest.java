@@ -49,16 +49,19 @@ class ProductServiceTest {
     void setUp() {
         category = CategoryEntity.builder()
                 .id(UUID.randomUUID())
-                .name("Cat")
+                .name("Electronics")
+                .description("Electronic products")
                 .build();
     }
 
     @Test
-    void createProduct_success() {
+    void createProduct_success_withAllFields() {
         ProductCreateDTO dto = new ProductCreateDTO();
-        dto.setName("Prod A");
-        dto.setPrice(BigDecimal.valueOf(10));
-        dto.setStockQuantity(5);
+        dto.setName("Notebook");
+        dto.setDescription("High performance notebook");
+        dto.setPrice(BigDecimal.valueOf(3000));
+        dto.setStockQuantity(10);
+        dto.setWeight(BigDecimal.valueOf(1.5));
         dto.setCategoryId(category.getId());
 
         when(productRepository.findByName(dto.getName())).thenReturn(null);
@@ -67,8 +70,10 @@ class ProductServiceTest {
         ProductEntity saved = ProductEntity.builder()
                 .id(UUID.randomUUID())
                 .name(dto.getName())
+                .description(dto.getDescription())
                 .price(dto.getPrice())
                 .stockQuantity(dto.getStockQuantity())
+                .weight(dto.getWeight())
                 .active(true)
                 .category(category)
                 .build();
@@ -78,8 +83,10 @@ class ProductServiceTest {
         ProductResponseDTO responseDTO = ProductResponseDTO.builder()
                 .id(saved.getId())
                 .name(saved.getName())
+                .description(saved.getDescription())
                 .price(saved.getPrice())
                 .stockQuantity(saved.getStockQuantity())
+                .weight(saved.getWeight())
                 .active(saved.getActive())
                 .build();
 
@@ -90,6 +97,8 @@ class ProductServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(saved.getId());
         assertThat(result.getName()).isEqualTo(dto.getName());
+        assertThat(result.getDescription()).isEqualTo(dto.getDescription());
+        assertThat(result.getWeight()).isEqualTo(dto.getWeight());
 
         verify(productRepository).findByName(dto.getName());
         verify(categoryRepository).findById(dto.getCategoryId());
@@ -131,15 +140,32 @@ class ProductServiceTest {
     @Test
     void getProductById_success() {
         UUID id = UUID.randomUUID();
-        ProductEntity entity = ProductEntity.builder().name("P").build();
+        ProductEntity entity = ProductEntity.builder()
+                .id(id)
+                .name("Product")
+                .description("Description")
+                .weight(BigDecimal.valueOf(2.0))
+                .averageRating(BigDecimal.valueOf(4.5))
+                .build();
 
         when(productRepository.findById(id)).thenReturn(Optional.of(entity));
-        ProductResponseDTO dto = ProductResponseDTO.builder().id(null).name("P").build();
+        ProductResponseDTO dto = ProductResponseDTO.builder()
+                .id(id)
+                .name("Product")
+                .description("Description")
+                .weight(BigDecimal.valueOf(2.0))
+                .averageRating(BigDecimal.valueOf(4.5))
+                .build();
+
         when(productMapper.toResponseDTO(entity)).thenReturn(dto);
 
         ProductResponseDTO result = productService.getProductById(id);
 
         assertThat(result).isEqualTo(dto);
+        assertThat(result.getDescription()).isEqualTo("Description");
+        assertThat(result.getWeight()).isEqualTo(BigDecimal.valueOf(2.0));
+        assertThat(result.getAverageRating()).isEqualTo(BigDecimal.valueOf(4.5));
+
         verify(productRepository).findById(id);
         verify(productMapper).toResponseDTO(entity);
     }
@@ -213,14 +239,24 @@ class ProductServiceTest {
     }
 
     @Test
-    void updateProduct_success_changeFieldsAndCategory() {
+    void updateProduct_success_changeAllFields() {
         UUID id = UUID.randomUUID();
-        ProductEntity entity = ProductEntity.builder().name("Old").price(BigDecimal.valueOf(1)).stockQuantity(2).active(true).build();
+        ProductEntity entity = ProductEntity.builder()
+                .id(id)
+                .name("Old")
+                .description("Old desc")
+                .price(BigDecimal.valueOf(100))
+                .stockQuantity(5)
+                .weight(BigDecimal.valueOf(1.0))
+                .active(true)
+                .build();
 
         ProductUpdateDTO dto = new ProductUpdateDTO();
         dto.setName("New");
-        dto.setPrice(BigDecimal.valueOf(5));
+        dto.setDescription("New desc");
+        dto.setPrice(BigDecimal.valueOf(200));
         dto.setStockQuantity(10);
+        dto.setWeight(BigDecimal.valueOf(2.0));
         dto.setActive(false);
         UUID newCatId = category.getId();
         dto.setCategoryId(newCatId);
@@ -228,13 +264,28 @@ class ProductServiceTest {
         when(productRepository.findById(id)).thenReturn(Optional.of(entity));
         when(categoryRepository.findById(newCatId)).thenReturn(Optional.of(category));
 
-        ProductEntity updated = ProductEntity.builder().name("New").build();
+        ProductEntity updated = ProductEntity.builder()
+                .id(id)
+                .name("New")
+                .description("New desc")
+                .weight(BigDecimal.valueOf(2.0))
+                .build();
+
         when(productRepository.save(entity)).thenReturn(updated);
-        when(productMapper.toResponseDTO(updated)).thenReturn(ProductResponseDTO.builder().name("New").build());
+        when(productMapper.toResponseDTO(updated)).thenReturn(
+                ProductResponseDTO.builder()
+                        .id(id)
+                        .name("New")
+                        .description("New desc")
+                        .weight(BigDecimal.valueOf(2.0))
+                        .build()
+        );
 
         var result = productService.updateProduct(id, dto);
 
         assertThat(result.getName()).isEqualTo("New");
+        assertThat(result.getDescription()).isEqualTo("New desc");
+        assertThat(result.getWeight()).isEqualTo(BigDecimal.valueOf(2.0));
 
         verify(productRepository).findById(id);
         verify(categoryRepository).findById(newCatId);
